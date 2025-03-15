@@ -16,11 +16,34 @@
             width: 100vw;
             height: 100vh;
         }
+        /* 和解文字样式 */
+        .message {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            color: #ff1493;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+        /* 表情包盒子 */
+        .emojis-box {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 28px;
+        }
+        /* 按钮基础样式 */
         .btn {
             position: absolute;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             padding: 20px 40px;
             border: none;
             border-radius: 40px;
@@ -29,23 +52,25 @@
             transition: all 0.3s ease;
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-50%);
         }
+        /* 按钮定位 */
         .yes-btn {
+            left: 35%;
             background-color: #ff69b4;
             color: white;
-            z-index: 1;
-            transform-origin: center;
         }
         .no-btn {
+            left: 65%;
             background-color: #ff1493;
             color: white;
-            z-index: 2;
-            transform-origin: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="emojis-box">❤️🐻🌸</div>
+        <div class="message">我们可以和好吗？</div>
         <button class="btn yes-btn">要！！！</button>
         <button class="btn no-btn">不要</button>
     </div>
@@ -55,20 +80,21 @@
         const noBtn = document.querySelector('.no-btn');
         let yesScale = 1;
         let noScale = 1;
-        let noPosition = 50;
+        let moveDistance = 0;
 
         noBtn.addEventListener('click', function() {
             // 增大"要"按钮
             yesScale *= 1.2;
-            yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+            yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
             
             // 缩小和移动"不要"按钮
             noScale *= 0.8;
-            noPosition += 20;
-            this.style.transform = `translate(calc(-50% + ${noPosition}%), -50%) scale(${noScale})`;
+            moveDistance += 40;
+            this.style.transform = `translate(calc(${moveDistance}px -50%), -50%) scale(${noScale})`;
             
             // 当按钮移出屏幕时隐藏
-            if (noPosition > window.innerWidth/2 + 100) {
+            const rect = this.getBoundingClientRect();
+            if (rect.right > window.innerWidth + 100) {
                 this.style.display = 'none';
             }
         });
