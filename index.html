@@ -1,104 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>和好吗？</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道歉</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: rgba(0,0,0,0.5);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-            -webkit-touch-callout: none;
+            overflow: hidden;
+            background-color: #ffe6f2;
+            touch-action: manipulation;
         }
-        .dialog {
-            background: #ffe6f2;
-            width: 80%;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            text-align: center;
+        .container {
             position: relative;
-        }
-        h1 {
-            color: #ff69b4;
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
+            width: 100vw;
+            height: 100vh;
         }
         .btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
             border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 40px;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.3s;
-            flex-shrink: 0;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .yes-btn {
-            background: #ff69b4;
+            background-color: #ff69b4;
             color: white;
+            z-index: 1;
+            transform-origin: center;
         }
         .no-btn {
-            background: #ff1493;
+            background-color: #ff1493;
             color: white;
+            z-index: 2;
+            transform-origin: center;
         }
     </style>
 </head>
 <body>
-    <div class="dialog">
-        <h1>要不要跟我和好？🌸</h1>
-        <div class="btn-group">
-            <button class="btn yes-btn">要！！！</button>
-            <button class="btn no-btn">不要</button>
-        </div>
+    <div class="container">
+        <button class="btn yes-btn">要！！！</button>
+        <button class="btn no-btn">不要</button>
     </div>
 
     <script>
         const yesBtn = document.querySelector('.yes-btn');
         const noBtn = document.querySelector('.no-btn');
+        let yesScale = 1;
         let noScale = 1;
-        let offset = 0;
+        let noPosition = 50;
 
-        // 点击"要"按钮
-        yesBtn.addEventListener('click', () => {
-            noBtn.style.display = 'none';
-            yesBtn.textContent = '就知道你会选我～😘';
-            yesBtn.style.fontSize = '20px';
-            yesBtn.disabled = true;
-        });
-
-        // 点击"不要"按钮
         noBtn.addEventListener('click', function() {
-            // 放大要按钮
-            yesBtn.style.transform = `scale(${1 + offset*0.2})`;
+            // 增大"要"按钮
+            yesScale *= 1.2;
+            yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
             
-            // 缩小和移动不要按钮
+            // 缩小和移动"不要"按钮
             noScale *= 0.8;
-            offset += 30;
-            this.style.transform = `translateX(${offset}px) scale(${noScale})`;
+            noPosition += 20;
+            this.style.transform = `translate(calc(-50% + ${noPosition}%), -50%) scale(${noScale})`;
             
-            // 移出屏幕后隐藏
-            if (offset > 200) {
+            // 当按钮移出屏幕时隐藏
+            if (noPosition > window.innerWidth/2 + 100) {
                 this.style.display = 'none';
-                yesBtn.textContent = '不许不要！😭';
-                yesBtn.style.fontSize = '24px';
             }
         });
-
-        // 禁止触摸滚动
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        }, { passive: false });
     </script>
 </body>
 </html>
