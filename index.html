@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>道歉</title>
+    <title>动态表情道歉卡</title>
     <style>
         body {
             margin: 0;
@@ -16,10 +16,30 @@
             width: 100vw;
             height: 100vh;
         }
-        /* 和解文字样式 */
+        /* 表情包盒子 */
+        .emojis-box {
+            position: absolute;
+            top: 0%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 30px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-width: 180px;
+            text-align: center;
+        }
+        /* 动态表情图片样式 */
+        .emoji-gif {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        /* 和解文字 */
         .message {
             position: absolute;
-            top: 25%;
+            top: 40%;
             left: 50%;
             transform: translateX(-50%);
             font-size: 32px;
@@ -28,22 +48,10 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
             white-space: nowrap;
         }
-        /* 表情包盒子 */
-        .emojis-box {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 15px 30px;
-            border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            font-size: 28px;
-        }
-        /* 按钮基础样式 */
+        /* 按钮样式 */
         .btn {
             position: absolute;
-            top: 50%;
+            top: 65%;
             padding: 20px 40px;
             border: none;
             border-radius: 40px;
@@ -52,9 +60,9 @@
             transition: all 0.3s ease;
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transform: translateY(-50%);
+            transform: translate(-50%, -50%);
+            transform-origin: center bottom;
         }
-        /* 按钮定位 */
         .yes-btn {
             left: 35%;
             background-color: #ff69b4;
@@ -69,7 +77,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="emojis-box">❤️🐻🌸</div>
+        <div class="emojis-box">
+            <img src="pig0.gif" class="emoji-gif" id="dynamic-emoji">
+        </div>
         <div class="message">我们可以和好吗？</div>
         <button class="btn yes-btn">要！！！</button>
         <button class="btn no-btn">不要</button>
@@ -78,25 +88,87 @@
     <script>
         const yesBtn = document.querySelector('.yes-btn');
         const noBtn = document.querySelector('.no-btn');
+        const emojiImg = document.getElementById('dynamic-emoji');
+        
+        // GIF表情包数组
+        const gifList = [
+            'pig0.gif',
+            'pig1.gif',
+            'pig2.gif',
+            'pig3.gif',
+            'pig5.gif',
+            'pig6.gif',          
+            'pig7.gif',
+            'pig8.gif',
+            'pig9.gif',
+       
+        ];
+        
+        // 不要按钮文本数组
+        const noButtonTexts = [
+            "不要",
+            "不要（老婆！）",
+            "不要（老婆！！！）",
+            "不要（不要嘛）",
+            "不要（老婆老婆老婆）",
+            "不要（要哭哭了）",
+            "不要（求求你了）",
+            "不要（呜呜呜）",
+            "不要（我错了）",
+        ];
+
+        let currentIndex = 0;
+        let textIndex = 0;
         let yesScale = 1;
-        let noScale = 1;
         let moveDistance = 0;
 
+        // 不要按钮点击事件
         noBtn.addEventListener('click', function() {
-            // 增大"要"按钮
-            yesScale *= 1.2;
-            yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+            // 切换按钮文字
+            textIndex = (textIndex + 1) % noButtonTexts.length;
+            this.textContent = noButtonTexts[textIndex];
+
+            // 切换GIF表情
+            currentIndex = (currentIndex + 1) % gifList.length;
+            emojiImg.src = gifList[currentIndex];
             
-            // 缩小和移动"不要"按钮
-            noScale *= 0.8;
+            // 按钮动画逻辑
+            yesScale = Math.min(yesScale * 1.2, 3);
+            yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+            
             moveDistance += 40;
-            this.style.transform = `translate(calc(${moveDistance}px -50%), -50%) scale(${noScale})`;
+            const currentScale = Math.max(1 - moveDistance/200, 0.5);
+            this.style.transform = `
+                translate(calc(-50% + ${moveDistance}px), -50%) 
+                scale(${currentScale})
+            `;
             
-            // 当按钮移出屏幕时隐藏
+            // 屏幕边缘检测
             const rect = this.getBoundingClientRect();
             if (rect.right > window.innerWidth + 100) {
-                this.style.display = 'none';
+                this.style.opacity = '0';
+                setTimeout(() => {
+                    this.style.display = 'none';
+                    alert("你逃不掉的~");
+                }, 300);
             }
+        });
+
+        // 要按钮点击事件
+        yesBtn.addEventListener('click', () => {
+            // 直接跳转到pig10.gif
+            currentIndex = gifList.indexOf('pig10.gif');
+            emojiImg.src = 'pig10.gif';
+            
+            // 重置不要按钮状态
+            noBtn.style.display = 'block';
+            noBtn.style.opacity = '1';
+            noBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+            moveDistance = 0;
+            yesScale = 1;
+            textIndex = 0;
+            noBtn.textContent = noButtonTexts[0];
+            yesBtn.style.transform = 'translate(-50%, -50%) scale(1)';
         });
     </script>
 </body>
